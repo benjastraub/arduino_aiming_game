@@ -27,13 +27,28 @@ int STEPS = 200; // 360º/1.8º
 Stepper motor = (STEPS, stepper_1, stepper_2, stepper_3, stepper_4);
 LiquidCrystal lcd(rs,en,d4,d5,d6,d7);
 
-// States of buttons and vibratino sensor
+// States of buttons and vibration sensor
 int left_button_state;
 int center_button_state;
 int right_button_state;
 
 int vibration;
 
+// Constants
+const float gear_diameter = 1.2;
+const float gear_radius = gear_diameter / 2;
+const float distance_per_step = pow(gear_radius, 2.0) * 3.14;
+const int total_length = 180;
+String regions[] = {"Arica", "Tarapaca", "Antofagasta", "Atacama", "Coquimbo", "Valparaiso", "Metropolitana", "O'Higgins", "Maule", "Biobio", "Araucania", "Los Rios", "Los lagos", "Aysen", "Magallanes"};
+
+// Variables
+long selected_region = [];
+int region_selection_pos = 0;
+bool region_selected = false;
+bool data_converted = false;
+bool first_position = false;
+
+// Data
 
 void setup() {
   // put your setup code here, to run once:
