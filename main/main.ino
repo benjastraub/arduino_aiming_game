@@ -65,6 +65,74 @@ long region_13[8] = {115149, 100861, 55189, 49552, 39689, 31311, 16194, 3664};
 long region_14[8] = {6672, 5696, 2959, 2548, 1899, 1531, 1436, 21};
 long region_15[8] = {4200, 3741, 2328, 1836, 1604, 1346, 1293, 12};
 
+// function that returns steps to move from x1 to x2
+int calculate_step(int x1, int x2){
+  int distance = x2 - x1;
+  int steps = distance / distance_per_step;
+  return steps;
+}
+
+//function that writes two line messages and erase it after a given time
+void two_liner(String line1, String line2, int delay_time){
+  lcd.setCursor(0,0);
+  lcd.print(line1);
+  lcd.setCursor(0,1);
+  lcd.print(line2);
+  delay(delay_time);
+  lcd.clear();
+}
+
+//function that writes two line messages and mantains it
+void two_liner2(String line1, String line2){
+  lcd.clear(); 
+  lcd.setCursor(0,0);
+  lcd.print(line1);
+  lcd.setCursor(0,1);
+  lcd.print(line2);
+}
+
+// function that prints an array
+void print_array(long my_array[]){
+  for(int i = 0; i < 8; i++) {
+   Serial.println(my_array[i]);
+  }
+}
+
+// function that select the region based on the index of the array regions wich ocntain the names
+void select_region(int index){
+  if (index == 0){
+    selected_region[8] = {region_15};
+  } else if (index == 1){
+      selected_region[8] = {region_1};
+  } else if (index == 2){
+      selected_region[8] = {region_2};
+  } else if (index == 3){
+      selected_region[8] = {region_3};
+  } else if (index == 4){
+      selected_region[8] = {region_4};
+  } else if (index == 5){
+      selected_region[8] = {region_5};
+  } else if (index == 6){
+      selected_region[8] = {region_13};
+  } else if (index == 7){
+      selected_region[8] = {region_6};
+  } else if (index == 8){
+      selected_region[8] = {region_7};
+  } else if (index == 9){
+      selected_region[8] = {region_8};
+  } else if (index == 10){
+      selected_region[8] = {region_9};
+  } else if (index == 11){
+      selected_region[8] = {region_14};
+  } else if (index == 12){
+      selected_region[8] = {region_10};
+  } else if (index == 13){
+      selected_region[8] = {region_11};
+  } else if (index == 14){
+      selected_region[8] = {region_12};
+  }
+}
+
 void setup() {
   // put your setup code here, to run once:
 
