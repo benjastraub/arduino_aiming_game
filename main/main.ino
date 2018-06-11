@@ -24,7 +24,7 @@ int right_button = 36;
 
 // Instances of stepper and lcd
 int STEPS = 200; // 360º/1.8º
-Stepper motor = (STEPS, stepper_1, stepper_2, stepper_3, stepper_4);
+Stepper motor(STEPS, stepper_1, stepper_2, stepper_3, stepper_4);
 LiquidCrystal lcd(rs,en,d4,d5,d6,d7);
 
 // States of buttons and vibration sensor
@@ -42,7 +42,7 @@ const int total_length = 180;
 String regions[] = {"Arica", "Tarapaca", "Antofagasta", "Atacama", "Coquimbo", "Valparaiso", "Metropolitana", "O'Higgins", "Maule", "Biobio", "Araucania", "Los Rios", "Los lagos", "Aysen", "Magallanes"};
 
 // Variables
-long selected_region = [];
+long selected_region[8];
 int region_selection_pos = 0;
 bool region_selected = false;
 bool data_converted = false;
@@ -156,5 +156,28 @@ void setup() {
 
 void loop() {
   // User select region
+  if (region_selected == false){
+    two_liner2("Elige la region", regions[0]);
+  }
+  while (region_selected == false){
+    left_button_state = digitalRead(left_button);
+    center_button_state = digitalRead(center_butotn);
+    right_button_state = digitalRead(right_button);
+
+    if (right_button_state == HIGH && region_selection_pos < sizeof(regions)){
+      delay(500);
+      region_selection_pos = ++region_selection_pos;
+      two_liner2("Elige la region", regions[region_selection_pos]);
+    } else if (left_button_state == HIGH && region_selection_pos > 0){
+      delay(500);
+      region_selection_pos = --region_selection_pos;
+      two_liner2("Elige la region", regions[region_selection_pos]);
+    } else if (center_button_state == HIGH){
+      delay(500);
+      two_liner2("Elegiste", regions[region_selection_pos]);
+      select_region(region_selection_pos);
+      region_selected = true;
+    }
+  }
 
 }
