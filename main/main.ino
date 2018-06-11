@@ -134,11 +134,27 @@ void select_region(int index){
 }
 
 void setup() {
-  // put your setup code here, to run once:
+  // Start of serial communication
+  Serial.begin(9600);
 
+  // Setup of lcd size
+  lcd.begin(16,2);
+
+  // Pinmodes
+  pinMode(vibration_in, INPUT);
+  pinMode(stepper_1, OUTPUT);
+  pinMode(stepper_2, OUTPUT);
+  pinMode(stepper_3, OUTPUT);
+  pinMode(stepper_4, OUTPUT);
+  pinMode(left_button, INPUT);
+  pinMode(center_butotn, INPUT);
+  pinMode(right_button, INPUT);
+
+  // Setup of motor speed
+  motor.setSpeed(20);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // User select region
 
 }
