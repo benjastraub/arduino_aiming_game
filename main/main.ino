@@ -39,7 +39,7 @@ int vibration;
 // Constants
 const float gear_diameter = 1.2;
 const float gear_radius = gear_diameter / 2;
-const float distance_per_step = pow(gear_radius, 2.0) * 3.14;
+const float distance_per_step = (pow(gear_radius, 2.0) * 3.14);
 const int total_length = 180;
 String regions[] = {"Arica", "Tarapaca", "Antofagasta", "Atacama", "Coquimbo", "Valparaiso", "Metropolitana", "O'Higgins", "Maule", "Biobio", "Araucania", "Los Rios", "Los lagos", "Aysen", "Magallanes"};
 
@@ -71,7 +71,7 @@ long region_15[8] = {100, 89,	55,	44,	38, 32,	31,	0};
 // function that returns steps to move from x1 to x2
 int calculate_step(int x1, int x2){
   int distance = x2 - x1;
-  int steps = distance / distance_per_step;
+  int steps = STEPS * (distance / distance_per_step);
   return steps;
 }
 
@@ -234,7 +234,20 @@ void loop() {
       int pos1 = selected_region[round_counter];
       int pos2 = selected_region[round_counter + 1];
       Serial.print(pos1); Serial.print(" "); Serial.println(pos2);
-      motor.step(calculate_step(pos1, pos2));
+      motor.step(-1 * calculate_step(pos1, pos2));
       delay(1000);
+      for (int j = 15; j > 1; j--){
+        two_liner2("Tiempo", String(j));
+        vibration = digitalRead(vibration_in);
+        delay(1000);
+        if (vibration == 1){
+          Serial.println("Pasaste");
+          break;
+        }
+        if (vibration == 0 && j == 2){
+          two_liner2("Perdiste","");
+          delay(10000);
+        }
+      }
   }
 }
