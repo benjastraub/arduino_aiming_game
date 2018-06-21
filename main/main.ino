@@ -42,7 +42,7 @@ const float gear_radius = gear_diameter / 2;
 const float distance_per_step = (pow(gear_radius, 2.0) * 3.14);
 const int total_length = 180;
 String regions[] = {"Arica", "Tarapaca", "Antofagasta", "Atacama", "Coquimbo", "Valparaiso", "Metropolitana", "O'Higgins", "Maule", "Biobio", "Araucania", "Los Rios", "Los lagos", "Aysen", "Magallanes"};
-
+String levels[] = {"Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4", "Nivel 5", "Nivel 6", "Nivel 7"};
 // Variables
 long selected_region[8];
 int region_selection_pos = 0;
@@ -230,19 +230,28 @@ void loop() {
   if (region_selected == true && round_counter < 7){
       Serial.println("En el loop de los turnos!");
       Serial.print("Loop "); Serial.println(round_counter);
+      bailout:
       round_counter = round_counter + 1;
       int pos1 = selected_region[round_counter];
       int pos2 = selected_region[round_counter + 1];
       Serial.print(pos1); Serial.print(" "); Serial.println(pos2);
+      two_liner2("Etapa", levels[round_counter]);
+      Serial.print("Etapa"); Serial.println(levels[round_counter]);
       motor.step(-1 * calculate_step(pos1, pos2));
       delay(1000);
       for (int j = 15; j > 1; j--){
-        two_liner2("Tiempo", String(j));
-        vibration = digitalRead(vibration_in);
-        delay(1000);
-        if (vibration == 1){
-          Serial.println("Pasaste");
-          break;
+        two_liner2(levels[round_counter], String(j));
+        Serial.println("Tiempo "); Serial.println(j);
+        for (int k = 0; k < 100; k++){
+          vibration = digitalRead(vibration_in);
+          delay(10);
+          if (vibration == 1){
+            Serial.println("Pasaste");
+            two_liner2("Pasaste","");
+            goto bailout;
+          } else{
+            continue;
+          }
         }
         if (vibration == 0 && j == 2){
           two_liner2("Perdiste","");
