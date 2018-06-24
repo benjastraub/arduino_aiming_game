@@ -22,8 +22,6 @@ int left_button = 40;
 int center_butotn = 38;
 int right_button = 36;
 
-int reset_pin = 53;
-
 // Instances of stepper and lcd
 int STEPS = 200; // 360º/1.8º
 Stepper motor(STEPS, stepper_1, stepper_2, stepper_3, stepper_4);
@@ -42,7 +40,8 @@ const float gear_radius = gear_diameter / 2;
 const float distance_per_step = (pow(gear_radius, 2.0) * 3.14);
 const int total_length = 180;
 String regions[] = {"Arica", "Tarapaca", "Antofagasta", "Atacama", "Coquimbo", "Valparaiso", "Metropolitana", "O'Higgins", "Maule", "Biobio", "Araucania", "Los Rios", "Los lagos", "Aysen", "Magallanes"};
-String levels[] = {"Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4", "Nivel 5", "Nivel 6", "Nivel 7"};
+String levels[8][2] = {{"",""},{"Rindes la PSU?", ""}, {"Postulas a la", "universidad?"}, {"Tu postulacion", "es valida?"}, {"Eres", "seleccionado?"}, {"Te matriculas", " en la U?"}, {"Es universidad", "del CRUCH?"}, {"Es en la PUC?", ""}};
+String name_levels[8][2] = {{"", ""}, {"Rendicion", ""}, {"Postulacion", ""}, {"Postulaicion", "valida"}, {"Seleccion", ""}, {"Matriculacion", ""}, {"Matriculacion", "CRUCH"}, {"Matriculacion", "PUC"}};
 // Variables
 long selected_region[8];
 int region_selection_pos = 0;
@@ -52,21 +51,21 @@ bool first_position = false;
 int round_counter = 0;
 
 // Data
-long region_1[8] = {100, 84, 48, 39, 34, 30, 27, 1};
-long region_2[8] = {100, 87, 58, 47, 40, 34, 30, 1};
-long region_3[8] = {100, 87, 56, 43, 38, 33, 29, 1};
-long region_4[8] = {100, 86, 45, 40, 32, 27, 24, 1};
-long region_5[8] = {100, 87, 50, 43, 36, 30, 23, 0};
-long region_6[8] = {100, 86, 46, 40, 33, 25, 18, 2};
-long region_7[8] = {100, 88, 47, 41, 31, 25, 23, 1};
-long region_8[8] = {100, 90, 55, 46, 37, 30, 24, 0};
-long region_9[8] = {100, 84, 49, 41, 35, 28, 25, 0};
-long region_10[8] = {100, 85, 44, 38, 31, 26, 23, 1};
-long region_11[8] = {100, 82, 39, 34, 28, 24, 18, 0};
-long region_12[8] = {100, 86, 54, 42, 36, 32, 28, 1};
-long region_13[8] = {100, 88, 48, 43, 34, 27, 14, 3};
-long region_14[8] = {100, 85, 44, 38, 28, 23, 22, 0};
-long region_15[8] = {100, 89,	55,	44,	38, 32,	31,	0};
+long region_1[8] = {100, 84, 57, 81, 89, 88, 91, 3};
+long region_2[8] = {100, 87, 66, 81, 85, 85, 90, 2};
+long region_3[8] = {100, 87, 64, 76, 90, 86, 89, 2};
+long region_4[8] = {100, 86, 53, 88, 81, 83, 90, 3};
+long region_5[8] = {100, 87, 57, 87, 82, 86, 77, 2};
+long region_6[8] = {100, 86, 53, 88, 81, 77, 72, 9};
+long region_7[8] = {100, 88, 54, 86, 76, 81, 89, 4};
+long region_8[8] = {100, 90, 61, 84, 80, 81, 82, 1};
+long region_9[8] = {100, 84, 58, 85, 85, 81, 86, 2};
+long region_10[8] = {100, 85, 53, 85, 81, 84, 88, 3};
+long region_11[8] = {100, 82, 48, 87, 81, 86, 76, 2};
+long region_12[8] = {100, 86, 63, 77, 87, 89, 87, 3};
+long region_13[8] = {100, 88, 55, 90, 80, 79, 52, 23};
+long region_14[8] = {100, 85, 52, 86, 75, 81, 94, 1};
+long region_15[8] = {100, 89, 62, 79, 87, 84, 96, 1};
 
 // function that returns steps to move from x1 to x2
 int calculate_step(int x1, int x2){
@@ -176,7 +175,7 @@ void convert_data(long data_array[8]){
 }
 
 void setup() {
-  digitalWrite(reset_pin, HIGH);
+  reset:
   // Start of serial communication
   Serial.begin(9600);
 
@@ -192,7 +191,6 @@ void setup() {
   pinMode(left_button, INPUT);
   pinMode(center_butotn, INPUT);
   pinMode(right_button, INPUT);
-  pinMode(reset_pin, OUTPUT);
 
   // Setup of motor speed
   motor.setSpeed(20);
@@ -200,6 +198,7 @@ void setup() {
 }
 
 void loop() {
+  reset:
   // User select region
   if (region_selected == false){
     two_liner2("Elige la region", regions[0]);
@@ -232,30 +231,42 @@ void loop() {
       Serial.print("Loop "); Serial.println(round_counter);
       bailout:
       round_counter = round_counter + 1;
-      int pos1 = selected_region[round_counter];
-      int pos2 = selected_region[round_counter + 1];
+      int pos1 = selected_region[round_counter - 1];
+      int pos2 = selected_region[round_counter];
       Serial.print(pos1); Serial.print(" "); Serial.println(pos2);
-      two_liner2("Etapa", levels[round_counter]);
-      Serial.print("Etapa"); Serial.println(levels[round_counter]);
+      two_liner2(levels[round_counter][0], levels[round_counter][1]);
+      Serial.print(levels[round_counter][0]); Serial.println(levels[round_counter][1]);
       motor.step(-1 * calculate_step(pos1, pos2));
       delay(1000);
-      for (int j = 15; j > 1; j--){
-        two_liner2(levels[round_counter], String(j));
+      for (int j = 5; j > 0; j--){
+        two_liner2("Tiempo restante", String(j));
         Serial.println("Tiempo "); Serial.println(j);
         for (int k = 0; k < 100; k++){
           vibration = digitalRead(vibration_in);
           delay(10);
           if (vibration == 1){
             Serial.println("Pasaste");
-            two_liner2("Pasaste","");
-            goto bailout;
+            lcd.clear();
+            two_liner("Pasaste","",1000);
+            if (round_counter == 7){
+              two_liner("Entraste a la PUC","",1000);
+              two_liner("Eres del", String(map(selected_region[round_counter + 1], total_length, 0 , 0, 100)) + "%",1000);
+              setup();
+              return;
+            } else{
+                goto bailout;
+            }
           } else{
             continue;
           }
         }
-        if (vibration == 0 && j == 2){
-          two_liner2("Perdiste","");
-          delay(10000);
+        if (vibration == 0 && j == 1){
+          two_liner("Perdiste","",1000); 
+          two_liner("Llegaste a", "", 1000);
+          two_liner(name_levels[round_counter][0], name_levels[round_counter][1], 1000);
+          two_liner("Eres del", String(map(selected_region[round_counter], total_length, 0 , 0, 100)) + "%", 1000);
+          setup();
+          return;
         }
       }
   }
