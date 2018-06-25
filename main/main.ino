@@ -22,6 +22,8 @@ int left_button = 40;
 int center_butotn = 38;
 int right_button = 36;
 
+int Reset = 42;
+
 // Instances of stepper and lcd
 int STEPS = 200; // 360º/1.8º
 Stepper motor(STEPS, stepper_1, stepper_2, stepper_3, stepper_4);
@@ -175,7 +177,9 @@ void convert_data(long data_array[8]){
 }
 
 void setup() {
-  reset:
+  digitalWrite(Reset, HIGH);
+  delay(200); 
+  pinMode(Reset, OUTPUT); 
   // Start of serial communication
   Serial.begin(9600);
 
@@ -198,7 +202,6 @@ void setup() {
 }
 
 void loop() {
-  reset:
   // User select region
   if (region_selected == false){
     two_liner2("Elige la region", regions[0]);
@@ -212,16 +215,19 @@ void loop() {
         delay(500);
         region_selection_pos = ++region_selection_pos;
         two_liner2("Elige la region", regions[region_selection_pos]);
+        Serial.println("Derecha");
       } else if (left_button_state == HIGH && region_selection_pos > 0){
         delay(500);
         region_selection_pos = --region_selection_pos;
         two_liner2("Elige la region", regions[region_selection_pos]);
+        Serial.println("Izquierda");
       } else if (center_button_state == HIGH){
         delay(500);
         two_liner2("Elegiste", regions[region_selection_pos]);
         select_region(region_selection_pos);
         region_selected = true;
         round_counter = 0;
+        Serial.println("Seleccionar");
       }
     }
   }
@@ -251,8 +257,8 @@ void loop() {
             if (round_counter == 7){
               two_liner("Entraste a la PUC","",1000);
               two_liner("Eres del", String(map(selected_region[round_counter + 1], total_length, 0 , 0, 100)) + "%",1000);
-              setup();
-              return;
+              motor.step(calculate_step(selected_region[round_counter], 0));
+              digitalWrite(Reset, LOW);
             } else{
                 goto bailout;
             }
@@ -265,8 +271,8 @@ void loop() {
           two_liner("Llegaste a", "", 1000);
           two_liner(name_levels[round_counter][0], name_levels[round_counter][1], 1000);
           two_liner("Eres del", String(map(selected_region[round_counter], total_length, 0 , 0, 100)) + "%", 1000);
-          setup();
-          return;
+          motor.step(calculate_step(selected_region[round_counter],0));
+          digitalWrite(Reset, LOW);
         }
       }
   }
