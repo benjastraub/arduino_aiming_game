@@ -39,8 +39,8 @@ int vibration;
 // Constants
 const float gear_diameter = 1.2;
 const float gear_radius = gear_diameter / 2;
-const float distance_per_step = (pow(gear_radius, 2.0) * 3.14);
-const int total_length = 180;
+const float distance_per_step = (2 * 3.14 * gear_radius) / STEPS;
+const int total_length = 175;
 String regions[] = {"Arica", "Tarapaca", "Antofagasta", "Atacama", "Coquimbo", "Valparaiso", "Metropolitana", "O'Higgins", "Maule", "Biobio", "Araucania", "Los Rios", "Los lagos", "Aysen", "Magallanes"};
 String levels[8][2] = {{"",""},{"Rindes la PSU?", ""}, {"Postulas a la", "universidad?"}, {"Tu postulacion", "es valida?"}, {"Eres", "seleccionado?"}, {"Te matriculas", " en la U?"}, {"Es universidad", "del CRUCH?"}, {"Es en la PUC?", ""}};
 String name_levels[8][2] = {{"", ""}, {"Rendicion", ""}, {"Postulacion", ""}, {"Postulaicion", "valida"}, {"Seleccion", ""}, {"Matriculacion", ""}, {"Matriculacion", "CRUCH"}, {"Matriculacion", "PUC"}};
@@ -71,8 +71,11 @@ long region_15[8] = {100, 89, 62, 79, 87, 84, 96, 1};
 
 // function that returns steps to move from x1 to x2
 int calculate_step(int x1, int x2){
+  Serial.print("Posicion inicial: "); Serial.println(x1);
+  Serial.print("Posicion final: "); Serial.println(x2);
   int distance = x2 - x1;
-  int steps = STEPS * (distance / distance_per_step);
+  Serial.print("Distancia: "); Serial.println(distance);
+  int steps = distance / distance_per_step;
   return steps;
 }
 
@@ -255,9 +258,9 @@ void loop() {
             lcd.clear();
             two_liner("Pasaste","",1000);
             if (round_counter == 7){
-              two_liner("Entraste a la PUC","",1000);
-              two_liner("Eres del", String(map(selected_region[round_counter + 1], total_length, 0 , 0, 100)) + "%",1000);
-              motor.step(calculate_step(selected_region[round_counter], 0));
+              two_liner("Entraste a la","PUC",1000);
+              two_liner("Eres del", String(map(selected_region[round_counter], total_length, 0 , 0, 100)) + "%",1000);
+              motor.step(-1 * calculate_step(selected_region[round_counter], 0));
               digitalWrite(Reset, LOW);
             } else{
                 goto bailout;
@@ -271,7 +274,7 @@ void loop() {
           two_liner("Llegaste a", "", 1000);
           two_liner(name_levels[round_counter][0], name_levels[round_counter][1], 1000);
           two_liner("Eres del", String(map(selected_region[round_counter], total_length, 0 , 0, 100)) + "%", 1000);
-          motor.step(calculate_step(selected_region[round_counter],0));
+          motor.step(-1 * calculate_step(selected_region[round_counter],0));
           digitalWrite(Reset, LOW);
         }
       }
